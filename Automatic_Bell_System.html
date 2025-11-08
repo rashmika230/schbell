@@ -1,0 +1,836 @@
+<!DOCTYPE html>
+<html lang="si">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ස්වයංක්‍රීය පාසල් සීනු නාද පද්ධතිය</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #333;
+        }
+
+        .login-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .login-card {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            max-width: 400px;
+            width: 100%;
+            text-align: center;
+        }
+
+        .login-card h1 {
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 2em;
+        }
+
+        .login-card p {
+            color: #666;
+            margin-bottom: 30px;
+        }
+
+        .login-form {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .login-input {
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 1.1em;
+            transition: all 0.3s;
+        }
+
+        .login-input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .login-btn {
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .login-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .error-message {
+            color: #f44336;
+            font-size: 0.9em;
+            margin-top: 10px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: none;
+        }
+
+        .container.active {
+            display: block;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header-content {
+            flex: 1;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .logout-btn {
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: 2px solid white;
+            padding: 10px 20px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .logout-btn:hover {
+            background: white;
+            color: #667eea;
+        }
+
+        .main-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+            margin-bottom: 25px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            animation: slideUp 0.5s ease;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .clock-card {
+            text-align: center;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+        }
+
+        .clock-display {
+            font-size: 4em;
+            font-weight: bold;
+            margin: 20px 0;
+            font-variant-numeric: tabular-nums;
+            text-shadow: 2px 2px 8px rgba(0,0,0,0.3);
+        }
+
+        .date-display {
+            font-size: 1.3em;
+            opacity: 0.95;
+            margin-bottom: 10px;
+        }
+
+        .location {
+            font-size: 1.1em;
+            opacity: 0.9;
+            margin-top: 10px;
+        }
+
+        .status-card {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+        }
+
+        .status-card h2 {
+            margin-bottom: 20px;
+            font-size: 1.8em;
+        }
+
+        .status-info {
+            background: rgba(255,255,255,0.2);
+            padding: 15px;
+            border-radius: 12px;
+            margin-bottom: 15px;
+        }
+
+        .status-info p {
+            font-size: 1.1em;
+            margin: 8px 0;
+        }
+
+        .control-card h2 {
+            color: #667eea;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #555;
+            font-weight: 600;
+        }
+
+        .form-group input[type="time"],
+        .form-group input[type="text"],
+        .form-group input[type="file"] {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 1em;
+            transition: all 0.3s;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .btn {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+        }
+
+        .btn-test {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            margin-top: 10px;
+        }
+
+        .bell-list {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        }
+
+        .bell-list h2 {
+            color: #667eea;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+        }
+
+        .bell-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 18px;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            border-radius: 12px;
+            margin-bottom: 15px;
+            transition: all 0.3s;
+        }
+
+        .bell-item:hover {
+            transform: translateX(5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .bell-time {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .bell-label {
+            font-size: 1em;
+            color: #555;
+            margin-top: 5px;
+        }
+
+        .bell-sound-name {
+            font-size: 0.9em;
+            color: #888;
+            margin-top: 3px;
+            font-style: italic;
+        }
+
+        .delete-btn {
+            background: #f5576c;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .delete-btn:hover {
+            background: #d63447;
+            transform: scale(1.05);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: #999;
+            font-size: 1.1em;
+        }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: white;
+            padding: 20px 30px;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            z-index: 1000;
+            animation: slideIn 0.5s ease;
+            max-width: 400px;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .notification.success {
+            border-left: 5px solid #4caf50;
+        }
+
+        .notification.error {
+            border-left: 5px solid #f44336;
+        }
+
+        .notification.bell-ring {
+            border-left: 5px solid #ff9800;
+            font-size: 1.2em;
+            font-weight: bold;
+        }
+
+        @media (max-width: 768px) {
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .clock-display {
+                font-size: 3em;
+            }
+
+            .header h1 {
+                font-size: 1.8em;
+            }
+
+            .header {
+                flex-direction: column;
+                gap: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Login Screen -->
+    <div class="login-container" id="loginContainer">
+        <div class="login-card">
+            <h1>🔔 සීනු පද්ධතිය</h1>
+            <p>කරුණාකර ඇතුල් වීමට මුරපදය ඇතුලත් කරන්න</p>
+            <form class="login-form" id="loginForm">
+                <input 
+                    type="password" 
+                    class="login-input" 
+                    id="passwordInput" 
+                    placeholder="මුරපදය"
+                    required
+                >
+                <button type="submit" class="login-btn">ඇතුල් වන්න</button>
+                <div class="error-message" id="errorMessage"></div>
+            </form>
+            <p style="margin-top: 20px; font-size: 0.85em; color: #999;">ඔබ පාසලට ලබා දුන් මුරපදය භාවිතා කරන්න.</p>
+        </div>
+    </div>
+
+    <!-- Main Application -->
+    <div class="container" id="mainContainer">
+        <div class="header">
+            <div class="header-content">
+                <h1>🔔 ස්වයංක්‍රීය පාසල් සීනු නාද පද්ධතිය</h1>
+                <p>Automatic School Bell System</p>
+            </div>
+            <button class="logout-btn" id="logoutBtn">පිටවීම</button>
+        </div>
+
+        <div class="main-grid">
+            <div class="card clock-card">
+                <h2>වත්මන් වේලාව</h2>
+                <div class="date-display" id="dateDisplay"></div>
+                <div class="clock-display" id="clockDisplay">00:00:00</div>
+                <div class="location">📍 ශ්‍රී ජයවර්ධනපුර කෝට්ටේ</div>
+            </div>
+
+            <div class="card status-card">
+                <h2>පද්ධති තත්ත්වය</h2>
+                <div class="status-info">
+                    <p><strong>සීනු ගණන:</strong> <span id="bellCount">0</span></p>
+                    <p><strong>ඊළඟ සීනුව:</strong> <span id="nextBell">නැත</span></p>
+                    <p><strong>පද්ධති තත්ත්වය:</strong> <span style="color: #4caf50;">✓ ක්‍රියාත්මකයි</span></p>
+                </div>
+            </div>
+        </div>
+
+        <div class="main-grid">
+            <div class="card control-card">
+                <h2>නව සීනු වේලාවක් එක් කරන්න</h2>
+                <form id="bellForm">
+                    <div class="form-group">
+                        <label for="bellTime">සීනු වේලාව:</label>
+                        <input type="time" id="bellTime" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="bellLabel">සීනු නාමය (විකල්ප):</label>
+                        <input type="text" id="bellLabel" placeholder="උදා: උදෑසන එකලස්වීම">
+                    </div>
+                    <div class="form-group">
+                        <label for="bellSound">සීනු ශබ්දය (විකල්ප):</label>
+                        <input type="file" id="bellSound" accept="audio/*">
+                        <small style="color: #888; display: block; margin-top: 5px;">පෙරනිමි: සිංහල පාසල් සීනු ශබ්දය</small>
+                    </div>
+                    <button type="submit" class="btn btn-primary">සීනුව එක් කරන්න</button>
+                    <button type="button" class="btn btn-test" id="testBellBtn">සීනුව පරීක්ෂා කරන්න</button>
+                </form>
+            </div>
+
+            <div class="bell-list">
+                <h2>සීනු වේලා ලැයිස්තුව</h2>
+                <div id="bellListContainer">
+                    <div class="empty-state">
+                        සීනු වේලා එකතු කර නැත
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <audio id="bellAudio" preload="auto"></audio>
+
+    <script>
+        // Password configuration
+        const CORRECT_PASSWORD = '1234';
+        let isLoggedIn = false;
+
+        // Bell system variables
+        let bells = [];
+        let customSounds = {};
+        let checkInterval;
+        let clockInterval;
+        let defaultBellSound = null;
+
+        // Check login status on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            checkLoginStatus();
+        });
+
+        // Check if user is logged in
+        function checkLoginStatus() {
+            const loggedIn = sessionStorage.getItem('bellSystemLoggedIn');
+            if (loggedIn === 'true') {
+                isLoggedIn = true;
+                showMainApplication();
+            }
+        }
+
+        // Login form submission
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const password = document.getElementById('passwordInput').value;
+            const errorMsg = document.getElementById('errorMessage');
+
+            if (password === CORRECT_PASSWORD) {
+                isLoggedIn = true;
+                sessionStorage.setItem('bellSystemLoggedIn', 'true');
+                errorMsg.textContent = '';
+                showMainApplication();
+            } else {
+                errorMsg.textContent = 'වැරදි මුරපදයකි! කරුණාකර නැවත උත්සාහ කරන්න.';
+                document.getElementById('passwordInput').value = '';
+            }
+        });
+
+        // Logout functionality
+        document.getElementById('logoutBtn').addEventListener('click', function() {
+            isLoggedIn = false;
+            sessionStorage.removeItem('bellSystemLoggedIn');
+            stopBellSystem();
+            document.getElementById('loginContainer').style.display = 'flex';
+            document.getElementById('mainContainer').classList.remove('active');
+            document.getElementById('passwordInput').value = '';
+            document.getElementById('errorMessage').textContent = '';
+        });
+
+        // Show main application
+        function showMainApplication() {
+            document.getElementById('loginContainer').style.display = 'none';
+            document.getElementById('mainContainer').classList.add('active');
+            initializeBellSystem();
+        }
+
+        // Initialize bell system
+        function initializeBellSystem() {
+            loadBells();
+            generateDefaultBellSound();
+            updateClock();
+            clockInterval = setInterval(updateClock, 1000);
+            startBellCheck();
+        }
+
+        // Stop bell system
+        function stopBellSystem() {
+            if (clockInterval) clearInterval(clockInterval);
+            if (checkInterval) clearInterval(checkInterval);
+        }
+
+        // Generate default bell sound
+        function generateDefaultBellSound() {
+            try {
+                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                const sampleRate = audioContext.sampleRate;
+                const duration = 3;
+                const numSamples = sampleRate * duration;
+                const buffer = audioContext.createBuffer(1, numSamples, sampleRate);
+                const data = buffer.getChannelData(0);
+
+                for (let i = 0; i < numSamples; i++) {
+                    const t = i / sampleRate;
+                    const envelope = Math.exp(-t * 2);
+                    
+                    let sample = 0;
+                    sample += Math.sin(2 * Math.PI * 523.25 * t) * 0.5;
+                    sample += Math.sin(2 * Math.PI * 659.25 * t) * 0.3;
+                    sample += Math.sin(2 * Math.PI * 783.99 * t) * 0.2;
+                    
+                    data[i] = sample * envelope * 0.3;
+                }
+
+                const wav = audioBufferToWav(buffer);
+                const blob = new Blob([wav], { type: 'audio/wav' });
+                const reader = new FileReader();
+                reader.onloadend = function() {
+                    defaultBellSound = reader.result;
+                };
+                reader.readAsDataURL(blob);
+            } catch (error) {
+                console.error('Error generating bell sound:', error);
+            }
+        }
+
+        function audioBufferToWav(buffer) {
+            const numChannels = 1;
+            const sampleRate = buffer.sampleRate;
+            const format = 1;
+            const bitDepth = 16;
+            const bytesPerSample = bitDepth / 8;
+            const blockAlign = numChannels * bytesPerSample;
+            const data = buffer.getChannelData(0);
+            const samples = new Int16Array(data.length);
+            
+            for (let i = 0; i < data.length; i++) {
+                const s = Math.max(-1, Math.min(1, data[i]));
+                samples[i] = s < 0 ? s * 0x8000 : s * 0x7FFF;
+            }
+
+            const dataLength = samples.length * bytesPerSample;
+            const bufferLength = 44 + dataLength;
+            const arrayBuffer = new ArrayBuffer(bufferLength);
+            const view = new DataView(arrayBuffer);
+
+            writeString(view, 0, 'RIFF');
+            view.setUint32(4, 36 + dataLength, true);
+            writeString(view, 8, 'WAVE');
+            writeString(view, 12, 'fmt ');
+            view.setUint32(16, 16, true);
+            view.setUint16(20, format, true);
+            view.setUint16(22, numChannels, true);
+            view.setUint32(24, sampleRate, true);
+            view.setUint32(28, sampleRate * blockAlign, true);
+            view.setUint16(32, blockAlign, true);
+            view.setUint16(34, bitDepth, true);
+            writeString(view, 36, 'data');
+            view.setUint32(40, dataLength, true);
+
+            let offset = 44;
+            for (let i = 0; i < samples.length; i++) {
+                view.setInt16(offset, samples[i], true);
+                offset += 2;
+            }
+
+            return arrayBuffer;
+        }
+
+        function writeString(view, offset, string) {
+            for (let i = 0; i < string.length; i++) {
+                view.setUint8(offset + i, string.charCodeAt(i));
+            }
+        }
+
+        function updateClock() {
+            const now = new Date();
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            const seconds = String(now.getSeconds()).padStart(2, '0');
+            
+            document.getElementById('clockDisplay').textContent = `${hours}:${minutes}:${seconds}`;
+            
+            const days = ['ඉරිදා', 'සඳුදා', 'අඟහරුවාදා', 'බදාදා', 'බ්‍රහස්පතින්දා', 'සිකුරාදා', 'සෙනසුරාදා'];
+            const months = ['ජනවාරි', 'පෙබරවාරි', 'මාර්තු', 'අප්‍රේල්', 'මැයි', 'ජූනි', 'ජූලි', 'අගෝස්තු', 'සැප්තැම්බර්', 'ඔක්තෝබර්', 'නොවැම්බර්', 'දෙසැම්බර්'];
+            
+            const dayName = days[now.getDay()];
+            const date = now.getDate();
+            const month = months[now.getMonth()];
+            const year = now.getFullYear();
+            
+            document.getElementById('dateDisplay').textContent = `${dayName}, ${year} ${month} ${date}`;
+        }
+
+        document.getElementById('bellForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const time = document.getElementById('bellTime').value;
+            const label = document.getElementById('bellLabel').value;
+            const soundFile = document.getElementById('bellSound').files[0];
+            
+            let soundId = 'default';
+            let soundName = 'පෙරනිමි සීනු ශබ්දය';
+            
+            if (soundFile) {
+                soundId = 'custom_' + Date.now();
+                soundName = soundFile.name;
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    customSounds[soundId] = e.target.result;
+                    localStorage.setItem('bellSounds', JSON.stringify(customSounds));
+                };
+                reader.readAsDataURL(soundFile);
+            }
+            
+            const bell = {
+                id: Date.now(),
+                time: time,
+                label: label || 'සීනුව',
+                soundId: soundId,
+                soundName: soundName
+            };
+            
+            bells.push(bell);
+            bells.sort((a, b) => a.time.localeCompare(b.time));
+            saveBells();
+            renderBells();
+            
+            document.getElementById('bellForm').reset();
+            showNotification('සීනුව සාර්ථකව එකතු කරන ලදී!', 'success');
+        });
+
+        document.getElementById('testBellBtn').addEventListener('click', function() {
+            playBell('default', 'පෙරනිමි සීනු ශබ්දය');
+            showNotification('සීනු ශබ්දය වාදනය කරමින්...', 'success');
+        });
+
+        function renderBells() {
+            const container = document.getElementById('bellListContainer');
+            
+            if (bells.length === 0) {
+                container.innerHTML = '<div class="empty-state">සීනු වේලා එකතු කර නැත</div>';
+                document.getElementById('bellCount').textContent = '0';
+                document.getElementById('nextBell').textContent = 'නැත';
+                return;
+            }
+            
+            container.innerHTML = bells.map(bell => `
+                <div class="bell-item">
+                    <div>
+                        <div class="bell-time">${bell.time}</div>
+                        <div class="bell-label">${bell.label}</div>
+                        <div class="bell-sound-name">🔊 ${bell.soundName}</div>
+                    </div>
+                    <button class="delete-btn" onclick="deleteBell(${bell.id})">මකන්න</button>
+                </div>
+            `).join('');
+            
+            document.getElementById('bellCount').textContent = bells.length;
+            updateNextBell();
+        }
+
+        function updateNextBell() {
+            const now = new Date();
+            const currentTime = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+            
+            const nextBell = bells.find(bell => bell.time > currentTime);
+            document.getElementById('nextBell').textContent = nextBell 
+                ? `${nextBell.time} - ${nextBell.label}`
+                : 'අද සඳහා සීනු නැත';
+        }
+
+        function deleteBell(id) {
+            bells = bells.filter(bell => bell.id !== id);
+            saveBells();
+            renderBells();
+            showNotification('සීනුව මකා දමන ලදී', 'success');
+        }
+
+        function startBellCheck() {
+            checkInterval = setInterval(() => {
+                const now = new Date();
+                const currentTime = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+                
+                bells.forEach(bell => {
+                    if (bell.time === currentTime && !bell.rungToday) {
+                        playBell(bell.soundId, bell.soundName);
+                        showNotification(`🔔 ${bell.label} - ${bell.time}`, 'bell-ring');
+                        bell.rungToday = true;
+                        
+                        setTimeout(() => {
+                            bell.rungToday = false;
+                        }, 65000);
+                    }
+                });
+                
+                updateNextBell();
+            }, 5000);
+        }
+
+        function playBell(soundId, soundName) {
+            const audio = document.getElementById('bellAudio');
+            
+            if (soundId === 'default') {
+                if (defaultBellSound) {
+                    audio.src = defaultBellSound;
+                } else {
+                    setTimeout(() => playBell(soundId, soundName), 500);
+                    return;
+                }
+            } else {
+                audio.src = customSounds[soundId];
+            }
+            
+            audio.play().catch(err => {
+                console.error('Error playing bell:', err);
+                showNotification('සීනු වාදනය කිරීමේදී දෝෂයක් ඇතිවිය', 'error');
+            });
+        }
+
+        function showNotification(message, type) {
+            const existing = document.querySelector('.notification');
+            if (existing) existing.remove();
+            
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.style.animation = 'slideIn 0.5s ease reverse';
+                setTimeout(() => notification.remove(), 500);
+            }, 3000);
+        }
+
+        function saveBells() {
+            localStorage.setItem('bells', JSON.stringify(bells));
+        }
+
+        function loadBells() {
+            const saved = localStorage.getItem('bells');
+            const savedSounds = localStorage.getItem('bellSounds');
+            
+            if (saved) {
+                bells = JSON.parse(saved);
+                renderBells();
+            }
+            
+            if (savedSounds) {
+                customSounds = JSON.parse(savedSounds);
+            }
+        }
+    </script>
+</body>
+</html>
